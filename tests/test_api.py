@@ -64,12 +64,11 @@ class TestUsersAPI:
 
     def test_create_user_invalid_email(self, client):
         """Тест создания пользователя с невалидным email"""
-        response = client.post("/users", json={
-            "name": "Test User",
-            "email": "invalid-email",
-            "balance": 100.0
-        })
-        
+        response = client.post(
+            "/users",
+            json={"name": "Test User", "email": "invalid-email", "balance": 100.0},
+        )
+
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -77,92 +76,114 @@ class TestTransferAPI:
     def test_transfer_success(self, client, sample_users):
         """Тест успешного перевода через API"""
         alice, bob, _ = sample_users
-        
-        response = client.post("/transfer", json={
-            "from_user_id": str(alice.id),
-            "to_user_id": str(bob.id),
-            "amount": 100.0
-        })
-        
+
+        response = client.post(
+            "/transfer",
+            json={
+                "from_user_id": str(alice.id),
+                "to_user_id": str(bob.id),
+                "amount": 100.0,
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["message"] == "Transfer successful"
         assert data["from_user_balance"] == 900.0
         assert data["to_user_balance"] == 600.0
-    
+
     def test_transfer_insufficient_funds(self, client, sample_users):
         """Тест перевода при недостатке средств через API"""
         alice, bob, _ = sample_users
-        
-        response = client.post("/transfer", json={
-            "from_user_id": str(bob.id),
-            "to_user_id": str(alice.id),
-            "amount": 600.0  # У Bob только 500
-        })
-        
+
+        response = client.post(
+            "/transfer",
+            json={
+                "from_user_id": str(bob.id),
+                "to_user_id": str(alice.id),
+                "amount": 600.0,  # У Bob только 500
+            },
+        )
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "Insufficient funds" in response.json()["detail"]
-    
+
     def test_transfer_self(self, client, sample_users):
         """Тест перевода самому себе через API"""
         alice, _, _ = sample_users
-        
-        response = client.post("/transfer", json={
-            "from_user_id": str(alice.id),
-            "to_user_id": str(alice.id),
-            "amount": 100.0
-        })
-        
+
+        response = client.post(
+            "/transfer",
+            json={
+                "from_user_id": str(alice.id),
+                "to_user_id": str(alice.id),
+                "amount": 100.0,
+            },
+        )
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "yourself" in response.json()["detail"].lower()
-    
+
     def test_transfer_user_not_found(self, client, sample_users):
         """Тест перевода с несуществующим пользователем через API"""
         import uuid
+
         alice, _, _ = sample_users
         fake_id = str(uuid.uuid4())
-        
-        response = client.post("/transfer", json={
-            "from_user_id": fake_id,
-            "to_user_id": str(alice.id),
-            "amount": 100.0
-        })
-        
+
+        response = client.post(
+            "/transfer",
+            json={
+                "from_user_id": fake_id,
+                "to_user_id": str(alice.id),
+                "amount": 100.0,
+            },
+        )
+
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert "not found" in response.json()["detail"].lower()
-    
+
     def test_transfer_invalid_uuid(self, client):
         """Тест перевода с невалидным UUID"""
-        response = client.post("/transfer", json={
-            "from_user_id": "invalid-uuid",
-            "to_user_id": "also-invalid",
-            "amount": 100.0
-        })
-        
+        response = client.post(
+            "/transfer",
+            json={
+                "from_user_id": "invalid-uuid",
+                "to_user_id": "also-invalid",
+                "amount": 100.0,
+            },
+        )
+
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    
+
     def test_transfer_zero_amount(self, client, sample_users):
         """Тест перевода нулевой суммы через API"""
         alice, bob, _ = sample_users
-        
-        response = client.post("/transfer", json={
-            "from_user_id": str(alice.id),
-            "to_user_id": str(bob.id),
-            "amount": 0.0
-        })
-        
+
+        response = client.post(
+            "/transfer",
+            json={
+                "from_user_id": str(alice.id),
+                "to_user_id": str(bob.id),
+                "amount": 0.0,
+            },
+        )
+
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    
+
     def test_transfer_negative_amount(self, client, sample_users):
         """Тест перевода отрицательной суммы через API"""
         alice, bob, _ = sample_users
-        
-        response = client.post("/transfer", json={
-            "from_user_id": str(alice.id),
-            "to_user_id": str(bob.id),
-            "amount": -50.0
-        })
-        
+
+        response = client.post(
+            "/transfer",
+            json={
+                "from_user_id": str(alice.id),
+                "to_user_id": str(bob.id),
+                "amount": -50.0,
+            },
+        )
+
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 

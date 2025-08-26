@@ -11,7 +11,7 @@ pip install -r requirements.txt
 uvicorn src.main:app --reload
 ```
 
-##API Endpoints
+## API Endpoints
 
 ##
 

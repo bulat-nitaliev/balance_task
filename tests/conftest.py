@@ -4,6 +4,7 @@ from src.main import app
 from src.models import storage, User
 from src.services import UserService
 
+
 @pytest.fixture(autouse=True)
 def clean_storage():
     """Очищаем хранилище перед каждым тестом"""
@@ -11,11 +12,13 @@ def clean_storage():
     storage.emails.clear()
     yield
 
+
 @pytest.fixture
 def client():
     """Тестовый клиент FastAPI"""
     with TestClient(app) as test_client:
         yield test_client
+
 
 @pytest.fixture
 def sample_users():
@@ -25,12 +28,12 @@ def sample_users():
         {"name": "Bob", "email": "bob@example.com", "balance": 500.0},
         {"name": "Charlie", "email": "charlie@example.com", "balance": 200.0},
     ]
-    
+
     users = []
     for user_data in users_data:
         user = UserService.create_user(
             user_data["name"], user_data["email"], user_data["balance"]
         )
         users.append(user)
-    
+
     return users
