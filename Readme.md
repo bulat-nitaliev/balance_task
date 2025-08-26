@@ -5,6 +5,8 @@ REST API для управления пользователями и перев�
 ## Запуск
 
 ```bash
+git clone https://github.com/bulat-nitaliev/balance_task.git
+cd balance_task
 pip install -r requirements.txt
 uvicorn src.main:app --reload
 ```
